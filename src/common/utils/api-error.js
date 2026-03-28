@@ -1,8 +1,8 @@
-class ApiError extends express {
+class ApiError extends Error {
   constructor(statusCode, message) {
     super(message);
     this.statusCode = statusCode;
-    isOperation = true;
+    this.isOperational = true;
 
     Error.captureStackTrace(this, this.constructor);
   }
@@ -11,10 +11,17 @@ class ApiError extends express {
     return new ApiError(400, message);
   }
 
-  static conflict(message = "User already Exist"){
-    return new ApiError(400 , message)
+  static conflict(message = "User already exists") {
+    return new ApiError(409, message);
+  }
+
+  static unauthorized(message = "User not authorized") {
+    return new ApiError(401, message);
+  }
+
+  static forbidden(message = "User not allowed") {
+    return new ApiError(403, message);
   }
 }
 
 export default ApiError;
- 
