@@ -33,12 +33,17 @@ const register = async ({name, email, password, role}) => {
 };
 
 const login = async ({email, password}) => {
-  const {email, password} = req.body;
-
+  
   const user = await User.findOne({email}).select("+password");
 
   if (!user) {
     throw ApiError.unauthorized("Invalid email or password");
+  }
+
+  const isMatched  = await user.comparePassword(password)
+
+  if(!isMatched){
+    throw ApiError.unauthorized("Wrong password")
   }
 
   if (!user.isVerified) {
@@ -107,6 +112,14 @@ const forgetPassword = async ({email, password}) => {
   return {userObj, accessToken, refreshToken};
 };
 
+const getMe = async(userId) => {
+  const user = await User.findById(userId)
+  if(!user){
+    throw ApiError.forbidden("User not found")
+  }
+
+  return user
+}
   
 
-export {register, login, logOut, forgetPassword , refresh};
+export {register, login, logOut, forgetPassword , refresh , getMe};
